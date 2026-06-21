@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spy Deobfuscator — Free LuaU Deobfuscator Online</title>
+    <meta name="description" content="Free online Lua deobfuscator. Reverse obfuscated Roblox LuaU scripts instantly. Best deobfuscator tool for Lua — fast, free, and easy to use." />
+    <meta name="keywords" content="lua deobfuscator, free deobfuscator, best deobfuscator, luau deobfuscator, roblox deobfuscator, deobfuscate lua, lua script deobfuscator online, reverse obfuscation lua, luau reverse engineer, roblox script deobfuscator free" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f0f17;
+            color: #d1d5db;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            background: #13131e;
+            border-bottom: 1px solid #1e1e30;
+            padding: 0 32px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #a78bfa;
+        }
+
+        .logo span {
+            color: #fff;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .sub {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 12px;
+            border: 1px solid #2a2a42;
+            border-radius: 6px;
+            overflow: hidden;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            padding: 7px 22px;
+            background: #13131e;
+            border: none;
+            color: #666;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .tab-btn:not(:last-child) {
+            border-right: 1px solid #2a2a42;
+        }
+
+        .tab-btn.active {
+            background: #1e1e30;
+            color: #a78bfa;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #16162a;
+            color: #d1d5db;
+        }
+
+        /* ===== DROP ZONE ===== */
+        .drop-zone {
+            background: #13131e;
+            border: 1px dashed #2a2a42;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .drop-zone:hover {
+            border-color: #6d28d9;
+            background: #16162a;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #a78bfa;
+            background: #1a1a2e;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-label {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .drop-label span {
+            color: #a78bfa;
+        }
+
+        .drop-hint {
+            font-size: 0.75rem;
+            color: #444;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #22c55e;
+            min-height: 16px;
+        }
+
+        /* ===== LINK PANEL ===== */
+        .link-panel {
+            background: #13131e;
+            border: 1px solid #2a2a42;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-panel label {
+            font-size: 0.82rem;
+            color: #888;
+        }
+
+        .link-input {
+            width: 100%;
+            padding: 9px 12px;
+            background: #0f0f17;
+            border: 1px solid #2a2a42;
+            border-radius: 5px;
+            color: #d1d5db;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .link-input:focus {
+            border-color: #6d28d9;
+        }
+
+        .link-input::placeholder {
+            color: #3a3a55;
+        }
+
+        .link-hint {
+            font-size: 0.75rem;
+            color: #444;
+        }
+
+        /* ===== UTILITY ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-obf {
+            padding: 10px 48px;
+            background: #1e1e30;
+            border: 1px solid #3a3a55;
+            border-radius: 5px;
+            color: #d1d5db;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .btn-obf:hover:not(:disabled) {
+            background: #2a2a42;
+            border-color: #6d28d9;
+        }
+
+        .btn-obf:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== STATUS ===== */
+        #status {
+            text-align: center;
+            font-size: 0.82rem;
+            padding: 6px 0;
+            color: #666;
+            min-height: 24px;
+        }
+
+        #status.ok {
+            color: #22c55e;
+        }
+
+        #status.err {
+            color: #ef4444;
+        }
+
+        #status.info {
+            color: #60a5fa;
+        }
+
+        /* ===== OUTPUT ===== */
+        #outputWrap {
+            display: none;
+        }
+
+        .out-box {
+            background: #13131e;
+            border: 1px solid #1e3a1e;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .out-top {
+            background: #0f1a0f;
+            border-bottom: 1px solid #1e3a1e;
+            padding: 7px 14px;
+            font-size: 0.72rem;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .out-top::before {
+            content: '●';
+            font-size: 0.6rem;
+        }
+
+        #outputCode {
+            width: 100%;
+            height: 180px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #86efac;
+            font-family: 'Courier New', monospace;
+            font-size: 0.78rem;
+            padding: 14px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btns button {
+            flex: 1;
+            padding: 9px;
+            background: #1e1e30;
+            border: 1px solid #2a2a42;
+            border-radius: 5px;
+            color: #d1d5db;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-btns button:hover {
+            background: #2a2a42;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #444;
+            font-size: 0.75rem;
+            border-top: 1px solid #1e1e30;
+            padding-top: 20px;
+        }
+
+        .footer a {
+            color: #6d28d9;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #a78bfa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav>
+        <span class="logo">Spy <span>Deobfuscator</span></span>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+
+        <h1>LuaU Deobfuscator</h1>
+        <p class="sub">Supports Prometheus &amp; Moonsec v3</p>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('file', this)">📁 Upload File</button>
+            <button class="tab-btn" onclick="switchTab('link', this)">🔗 Raw Link</button>
+        </div>
+
+        <!-- Drop Zone (File Upload) -->
+        <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" onchange="onFileChange(this)" />
+            <div class="drop-label">📤 Drop your file here or <span>click to browse</span></div>
+            <div class="drop-hint">Only Prometheus / Moonsec v3</div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <!-- Link Panel (Raw URL) -->
+        <div class="link-panel hidden" id="linkPanel">
+            <label for="linkInput">🔗 Enter raw script URL</label>
+            <input
+            type="text"
+            id="linkInput"
+            class="link-input"
+            placeholder="https://raw.githubusercontent.com/user/repo/main/script.lua"
+            />
+            <span class="link-hint">
+                Paste a direct/raw link to a .lua file (GitHub raw, Pastebin raw, etc.)
+            </span>
+        </div>
+
+        <!-- Deobfuscate Button -->
+        <div class="btn-row">
+            <button class="btn-obf" id="deobfBtn" onclick="deobfuscate()">⚡ Deobfuscate</button>
+        </div>
+
+        <!-- Status Message -->
+        <div id="status"></div>
+
+        <!-- Output Panel -->
+        <div id="outputWrap">
+            <div class="out-box">
+                <div class="out-top">📄 Output — Deobfuscated Script</div>
+                <textarea id="outputCode" readonly></textarea>
+            </div>
+            <div class="action-btns">
+                <button onclick="copyOut(this)">📋 Copy</button>
+                <button onclick="downloadOut()">💾 Download .lua</button>
+                <button onclick="reset()">🔄 New Script</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Made with ❤️ | Deployed on Vercel
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ===== CONFIGURATION =====
+        const COOLDOWN = 30;
+        let cooldownTimer = null;
+        let selectedFile = null;
+        let activeTab = 'file';
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tab, btn) {
+            activeTab = tab;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Toggle panels
+            document.getElementById('dropZone').classList.toggle('hidden', tab !== 'file');
+            document.getElementById('linkPanel').classList.toggle('hidden', tab !== 'link');
+
+            // Reset state
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('linkInput').value = '';
+            document.getElementById('outputWrap').style.display = 'none';
+            setStatus('', '');
+        }
+
+        // ===== DROP ZONE EVENTS =====
+        const dz = document.getElementById('dropZone');
+
+        dz.addEventListener('dragover', e => {
+            e.preventDefault();
+            dz.classList.add('drag-over');
+        });
+
+        dz.addEventListener('dragleave', () => {
+            dz.classList.remove('drag-over');
+        });
+
+        dz.addEventListener('drop', e => {
+            e.preventDefault();
+            dz.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) {
+                selectedFile = e.dataTransfer.files[0];
+                document.getElementById('fileName').textContent = selectedFile.name;
+            }
+        });
+
+        // ===== FILE INPUT HANDLER =====
+        function onFileChange(input) {
+            selectedFile = input.files[0] || null;
+            document.getElementById('fileName').textContent = selectedFile ? selectedFile.name : '';
+        }
+
+        // ===== COOLDOWN =====
+        function startCooldown() {
+            const btn = document.getElementById('deobfBtn');
+            btn.disabled = true;
+            let remaining = COOLDOWN;
+
+            if (cooldownTimer) clearInterval(cooldownTimer);
+
+            cooldownTimer = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(cooldownTimer);
+                    btn.disabled = false;
+                    btn.textContent = '⚡ Deobfuscate';
+                } else {
+                    btn.textContent = `⏳ Wait ${remaining}s`;
+                }
+            }, 1000);
+        }
+
+        // ===== MAIN DEOBFUSCATE FUNCTION =====
+        async function deobfuscate() {
+            document.getElementById('outputWrap').style.display = 'none';
+
+            // --- File Tab ---
+            if (activeTab === 'file') {
+                if (!selectedFile) {
+                    setStatus('⚠️ Please upload a file first.', 'err');
+                    return;
+                }
+
+                setStatus('⏳ Deobfuscating your script, please wait...', 'info');
+                startCooldown();
+
+                const fd = new FormData();
+                fd.append("file", selectedFile);
+
+                try {
+                    const res = await fetch("/api/deobf", { method: "POST", body: fd });
+                    const data = await res.json();
+
+                    if (!res.ok || data.success === false) {
+                        setStatus("❌ It's not moonsec v3 or prometheus.", 'err');
+                        return;
+                    }
+
+                    const result = (data.deobfuscated || data.result || data.code || '').replace(/\\n/g, "\n");
+                    showOutput(result);
+
+                } catch (e) {
+                    setStatus('❌ Network error: ' + e.message, 'err');
+                }
+
+                return;
+            }
+
+            // --- Link Tab ---
+            const url = document.getElementById('linkInput').value.trim();
+
+            if (!url) {
+                setStatus('⚠️ Please enter a raw link first.', 'err');
+                return;
+            }
+
+            if (!/^https?:\/\//i.test(url)) {
+                setStatus('⚠️ Link must start with http:// or https://', 'err');
+                return;
+            }
+
+            setStatus('⏳ Fetching script from link... (may take 5–30s)', 'info');
+            startCooldown();
+
+            try {
+                // Try multiple CORS proxies
+                const proxies = [
+                    'https://corsproxy.io/?' + encodeURIComponent(url),
+                    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+                    'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+                ];
+
+                let scriptText = null;
+
+                for (const proxyUrl of proxies) {
+                    try {
+                        const r = await fetch(proxyUrl);
+                        if (r.ok) {
+                            scriptText = await r.text();
+                            break;
+                        }
+                    } catch (_) {
+                        continue;
+                    }
+                }
+
+                if (scriptText === null) {
+                    setStatus('❌ Could not fetch the link. Make sure it is a direct/raw URL.', 'err');
+                    return;
+                }
+
+                // Normalize
+                scriptText = scriptText
+                    .replace(/^\uFEFF/, '') // BOM
+                    .replace(/\r\n/g, '\n')
+                    .replace(/\r/g, '\n');
+
+                const blob = new Blob([scriptText], { type: 'text/plain' });
+                const file = new File([blob], 'script.lua', { type: 'text/plain' });
+
+                setStatus('⏳ Deobfuscating your script, please wait...', 'info');
+
+                const fd = new FormData();
+                fd.append("file", file);
+
+                const res = await fetch("/api/deobf", { method: "POST", body: fd });
+                const data = await res.json();
+
+                if (!res.ok || data.success === false) {
+                    setStatus("❌ It's not moonsec/prometheus or error.", 'err');
+                    return;
+                }
+
+                const result = (data.deobfuscated || data.result || data.code || '').replace(/\\n/g, "\n");
+                showOutput(result);
+
+            } catch (e) {
+                setStatus('❌ Network error: ' + e.message, 'err');
+            }
+        }
+
+        // ===== SHOW OUTPUT =====
+        function showOutput(result) {
+            // Remove watermark if present
+            const cleaned = result.trim().replace(/--\s*\[\[.*?This file is generated using Spy Deobfuscator.*?\]\]/gis, '').trim();
+
+            if (!cleaned) {
+                setStatus("❌ It's not moonsec/prometheus or error.", 'err');
+                return;
+            }
+
+            document.getElementById('outputCode').value = result;
+            document.getElementById('outputWrap').style.display = 'block';
+            setStatus('✅ Deobfuscation complete! You can now copy or download your script.', 'ok');
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function setStatus(msg, cls) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = cls;
+        }
+
+        function copyOut(btn) {
+            const code = document.getElementById('outputCode').value;
+            navigator.clipboard.writeText(code);
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = '📋 Copy', 2000);
+        }
+
+        function downloadOut() {
+            const code = document.getElementById('outputCode').value;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'deobfuscated.lua';
+            a.click();
+        }
+
+        function reset() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('linkInput').value = '';
+            document.getElementById('outputWrap').style.display = 'none';
+            setStatus('', '');
+        }
+
+        // ===== KEYBOARD SHORTCUT =====
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Enter or Cmd+Enter to deobfuscate
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                deobfuscate();
+            }
+        });
+    </script>
+
+</body>
+</html>
